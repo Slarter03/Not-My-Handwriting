@@ -1,0 +1,1 @@
+from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass HandwritingRequest(BaseModel):\n    text: str\n\n@app.post("/generate/handwriting")\nasync def generate_handwriting(request: HandwritingRequest):\n    # Logic to generate handwriting image (not implemented)\n    return {"message": "Handwriting generated", "text": request.text}
