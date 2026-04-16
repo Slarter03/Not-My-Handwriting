@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not My Handwriting</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #results { margin-top: 20px; }
+        input[type="file"] { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Not My Handwriting Application</h1>
+    <h2>Upload Baseline Handwriting</h2>
+    <input type="file" id="baselineUpload" accept="image/*">
+    <button id="uploadBtn">Upload</button>
+    
+    <h2>Submit Text for Verification</h2>
+    <textarea id="textInput" rows="4" cols="50" placeholder="Enter text to verify..."></textarea>
+    <br>
+    <button id="submitTextBtn">Submit</button>
+    
+    <div id="results"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#uploadBtn').click(function() {
+                const file = $('#baselineUpload')[0].files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('baseline', file);
+                    $.ajax({
+                        url: '/upload-baseline',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            alert('Baseline uploaded successfully!');
+                        },
+                        error: function() {
+                            alert('Error uploading baseline.');
+                        }
+                    });
+                } else {
+                    alert('Please select a file to upload.');
+                }
+            });
+
+            $('#submitTextBtn').click(function() {
+                const text = $('#textInput').val();
+                if (text) {
+                    $.ajax({
+                        url: '/verify-text',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ text: text }),
+                        success: function(response) {
+                            $('#results').html('<h3>Verification Results:</h3><pre>' + JSON.stringify(response, null, 2) + '</pre>');
+                        },
+                        error: function() {
+                            $('#results').html('<h3>Error verifying text.</h3>');
+                        }
+                    });
+                } else {
+                    alert('Please enter text to verify.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
